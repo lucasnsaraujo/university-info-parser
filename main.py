@@ -2,6 +2,8 @@ import json
 from re import sub
 from selenium import webdriver
 from time import sleep
+import requests
+import urllib.parse
 
 base_url = "https://aluno.uvv.br/Aluno/Post/"
 
@@ -11,13 +13,18 @@ with open('options.json') as file:
     user_data = json.load(file)
     id = user_data['id']
     password = user_data["password"]
+    phone_number = user_data["phone_number"]
+    callmebot_api_key = user_data["callmebot_api_key"]
 
 print("[1/] Arquivo aberto com sucesso.\n")
 
 
 # INICIA O WEBDRIVER E LOGA NO PORTAL UVV
 
-driver = webdriver.Chrome()
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")
+
+driver = webdriver.Chrome(options=options)
 driver.get("https://aluno.uvv.br/")
 sleep(3)
 
@@ -85,6 +92,12 @@ for index in range(608300, 658858):
     except:
         print("ERRO! Post nao encontrado. Indo para o proximo")
 
+
+# SENDS A WHATSAPP MESSAGE IF BOT STOPS WORKING
+
+callmebot_message = urllib.parse.quote("O bot da UVV parou de funcionar.")
+
+requests.get("https://api.callmebot.com/whatsapp.php?phone=" + phone_number + "&text=" + callmebot_message + "&apikey=" + callmebot_api_key)
 
 print("Programa finalizado.")
 
