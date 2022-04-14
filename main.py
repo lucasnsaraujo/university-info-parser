@@ -1,6 +1,7 @@
 import json
 from re import sub
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from time import sleep
 import requests
 import urllib.parse
@@ -16,8 +17,17 @@ with open('options.json') as file:
     phone_number = user_data["phone_number"]
     callmebot_api_key = user_data["callmebot_api_key"]
 
-print("[1/] Arquivo aberto com sucesso.\n")
+print("[1/4] Arquivo aberto com sucesso.\n")
 
+# PEGA O PROGRESSO DO SCRIPT
+try:
+    with open('save_progress.json') as progress_load_file:
+        data = json.load(progress_load_file)
+        last_registered_post = str(data['last_registered_post'])
+        print('Progresso encontrado. Continuando do post ' + last_registered_post + '\n')
+
+except:
+    print('Progresso não encontrado. Começando novamente.\n')
 
 # INICIA O WEBDRIVER E LOGA NO PORTAL UVV
 
@@ -28,26 +38,26 @@ driver = webdriver.Chrome(options=options)
 driver.get("https://aluno.uvv.br/")
 sleep(3)
 
-print("[2/] Browser aberto.\n")
+print("[2/4] Browser aberto.\n")
 
-id_form = driver.find_element_by_xpath("/html/body/div[1]/div/div/div[1]/div/form/div[1]/input")
+id_form = driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div[1]/div/form/div[1]/input")
 id_form.send_keys(id)
 
-print("[3/] Matrícula inserida.\n")
+print("[3/4] Matrícula inserida.\n")
 
-password_form = driver.find_element_by_xpath("/html/body/div[1]/div/div/div[1]/div/form/div[2]/input")
+password_form = driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div[1]/div/form/div[2]/input")
 password_form.send_keys(password)
 
-print("[4/] Senha inserida.\n")
+print("[4/4] Senha inserida.\n")
 
-submit_form = driver.find_element_by_xpath("/html/body/div[1]/div/div/div[1]/div/form/div[3]/div[1]/button")
+submit_form = driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div[1]/div/form/div[3]/div[1]/button")
 submit_form.click()
 
 print("Logado com sucesso. Iniciando for loop...\n")
 
 # WHILE LOOP GOING THROUGH EVERY POST
 
-for index in range(608300, 658858):
+for index in range((int(last_registered_post) or 608300), 658858):
     try:
 
 
@@ -58,22 +68,21 @@ for index in range(608300, 658858):
 
         print("[1/3] Post " + str(index) + " aberto.\n")
 
-        post_title = driver.find_element_by_xpath("/html/body/div[1]/div[3]/div/div/div[1]/div[1]/h1").text
-        post_teacher = driver.find_element_by_xpath("/html/body/div[1]/div[3]/div/div/div[2]/div/div[1]/div/div/div[1]/h4/strong").text
-        post_subject = driver.find_element_by_xpath("/html/body/div[1]/div[3]/div/div/ol/li[2]/a").text
-        post_subject_url = driver.find_element_by_xpath("/html/body/div[1]/div[3]/div/div/ol/li[2]/a").get_attribute('href')
-        
-        print(post_title, post_teacher, post_subject, post_subject_url)
+        post_title = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div/div/div[1]/div[1]/h1").text
+        post_teacher = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div/div/div[2]/div/div[1]/div/div/div[1]/h4/strong").text
+        post_subject = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div/div/ol/li[2]/a").text
+        post_subject_url = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div/div/ol/li[2]/a").get_attribute('href')
 
         print("[2/3] Dados do post obtidos.\n")
         print("Post " + str(index) + " encontrado. Matéria: " + str(post_subject) + '\n')
 
         post_dict = {
+            "post_id" : str(index),
             "post_title" : post_title,
             "teacher" : post_teacher,
             "subject" : post_subject,
             "subject_url" : post_subject_url,
-            "post_url" : post_url
+            "post_url" : post_url,
             }
 
         # UPDATES JSON DATA FILE WITH PARSED INFO
@@ -84,13 +93,20 @@ for index in range(608300, 658858):
              json.dump(data, file)
         
         print("[3/3] Arquivo data atualizado com infos.\n")
-        print("Indo para próximo post.\n")
-        
 
-        
+        # SALVAR PROGRESSO DO SCRIPT
+        progress = {"last_registered_post" : str(index)}
+
+        with open('save_progress.json', 'w') as progress_file:
+            json.dump(progress, progress_file)
+
+        print("Indo para próximo post.\n")
+        print("=-" * 20 + '\n')
 
     except:
         print("ERRO! Post nao encontrado. Indo para o proximo")
+        print("=-" * 20 + '\n')
+
 
 
 # SENDS A WHATSAPP MESSAGE IF BOT STOPS WORKING
@@ -100,15 +116,3 @@ callmebot_message = urllib.parse.quote("O bot da UVV parou de funcionar.")
 requests.get("https://api.callmebot.com/whatsapp.php?phone=" + phone_number + "&text=" + callmebot_message + "&apikey=" + callmebot_api_key)
 
 print("Programa finalizado.")
-
-
-
-
-
-
-
-
-
-
-
-#
