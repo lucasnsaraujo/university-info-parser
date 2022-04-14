@@ -7,6 +7,30 @@ import requests
 import urllib.parse
 
 base_url = "https://aluno.uvv.br/Aluno/Post/"
+error_counter = 0
+
+def login(options, driver):
+    driver.get("https://aluno.uvv.br/")
+    sleep(3)
+
+    print("[2/4] Browser aberto.\n")
+
+    id_form = driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div[1]/div/form/div[1]/input")
+    id_form.send_keys(id)
+
+    print("[3/4] Matrícula inserida.\n")
+
+    password_form = driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div[1]/div/form/div[2]/input")
+    password_form.send_keys(password)
+
+    print("[4/4] Senha inserida.\n")
+
+    submit_form = driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div[1]/div/form/div[3]/div[1]/button")
+    submit_form.click()
+
+    print("Logado com sucesso. Iniciando for loop...\n")
+
+    return driver
 
 
 # OPEN OPTIONS JSON FILE AND GETS ID AND PASSWORD
@@ -35,31 +59,23 @@ options = webdriver.ChromeOptions()
 options.add_argument("--headless")
 
 driver = webdriver.Chrome(options=options)
-driver.get("https://aluno.uvv.br/")
-sleep(3)
-
-print("[2/4] Browser aberto.\n")
-
-id_form = driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div[1]/div/form/div[1]/input")
-id_form.send_keys(id)
-
-print("[3/4] Matrícula inserida.\n")
-
-password_form = driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div[1]/div/form/div[2]/input")
-password_form.send_keys(password)
-
-print("[4/4] Senha inserida.\n")
-
-submit_form = driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div[1]/div/form/div[3]/div[1]/button")
-submit_form.click()
-
-print("Logado com sucesso. Iniciando for loop...\n")
+login(options, driver)
 
 # WHILE LOOP GOING THROUGH EVERY POST
 
 for index in range((int(last_registered_post) or 608300), 658858):
     try:
-
+        if error_counter >= 10:
+            try:
+                driver.close()
+                driver = webdriver.Chrome(options=options)
+                login(options, driver)
+                print("Desconectado do portal. Logando novamente...")
+            except:
+                pass
+            finally: 
+                error_counter = 0
+                print("Contador de erros resetado para zero.")
 
         post_url = base_url + str(index)
 
@@ -100,12 +116,14 @@ for index in range((int(last_registered_post) or 608300), 658858):
         with open('save_progress.json', 'w') as progress_file:
             json.dump(progress, progress_file)
 
+        error_counter = 0
         print("Indo para próximo post.\n")
         print("=-" * 20 + '\n')
 
     except:
         print("ERRO! Post nao encontrado. Indo para o proximo")
         print("=-" * 20 + '\n')
+        error_counter += 1
 
 
 
