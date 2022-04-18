@@ -1,0 +1,6 @@
+{
+    "id": "your_id_here",
+    "password": "your_password_here",
+    "phone_number": "your_phone_number_here_optional",
+    "callmebot_api_key": "your_api_key_here_optional"
+}

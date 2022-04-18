@@ -38,8 +38,11 @@ with open('options.json') as file:
     user_data = json.load(file)
     id = user_data['id']
     password = user_data["password"]
-    phone_number = user_data["phone_number"]
-    callmebot_api_key = user_data["callmebot_api_key"]
+    try: 
+        phone_number = user_data["phone_number"]
+        callmebot_api_key = user_data["callmebot_api_key"]
+    except:
+        print('CallMeBot não configurado.')
 
 print("[1/4] Arquivo aberto com sucesso.\n")
 
@@ -134,6 +137,8 @@ for index in range((int(last_registered_post) or 608300), 658858):
 
 callmebot_message = urllib.parse.quote("O bot da UVV parou de funcionar.")
 
-requests.get("https://api.callmebot.com/whatsapp.php?phone=" + phone_number + "&text=" + callmebot_message + "&apikey=" + callmebot_api_key)
-
+try: 
+    requests.get("https://api.callmebot.com/whatsapp.php?phone=" + phone_number + "&text=" + callmebot_message + "&apikey=" + callmebot_api_key)
+except:
+    pass
 print("Programa finalizado.")
