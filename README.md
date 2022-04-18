@@ -6,6 +6,7 @@ Um tempo atrás descobri que no portal da minha universidade, a URL me permite n
 O arquivo JSON gerado registra o ID do post, Título, Matéria, Professor, URL do post e URL da matéria. Ele então é filtrado no site React para mostrar somente a matéria e URL da matéria, afim de deixar o site mais performático, levando em consideração que milhares de posts fariam o site extremamente lento.
 
 ### Como iniciar
+- Preencher o arquivo ```options.json``` na pasta raiz com um arquivo JSON com as chaves id (matrícula no portal), password (senha no portal), phone_number (número de telefone registrado na API do CallmeBot) e callmebot_api_key (API Key do Call me Bot). Este dois últimos são opcionais.  
 - ```python main.py``` na pasta principal para iniciar o script.
 - ```cd react-website/website``` para acessar a pasta do site em React.
 - ```yarn``` para instalar as dependências do projeto.
