@@ -22,4 +22,4 @@ O arquivo JSON gerado registra o ID do post, Título, Matéria, Professor, URL d
 - O site em React está bem simples e só lista as matérias e os links para as matérias, mas pode também listar os posts. Porém, necessitaria de uma paginação pois são muitos posts.
 - Utilizei o Styled Components para estilizar a página.
 - Ele percorre o JSON criado pelo script com todos os posts registrados, filtra por matéria e por link da matérias.
-
+- Fiz com a ajuda do [Lucas Dantas](https://github.com/lucasdantas51), simplesmente o mestre do CSS.
