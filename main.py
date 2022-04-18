@@ -116,6 +116,9 @@ for index in range((int(last_registered_post) or 608300), 658858):
         with open('save_progress.json', 'w') as progress_file:
             json.dump(progress, progress_file)
 
+        with open('./react-website/website/src/json_formatted.js', 'r+') as json_formatted_file:
+            json_formatted_file.write("""export const data = """ + str(data))
+
         error_counter = 0
         print("Indo para próximo post.\n")
         print("=-" * 20 + '\n')
